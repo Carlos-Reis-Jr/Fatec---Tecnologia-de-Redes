@@ -31,7 +31,7 @@ Flag_JogaServer = False;
 
 def registra_resultado( Trinca, LinCol ):
 
-  global DadosJogo
+  global DadosJogo, Flag_JogaServer
 
   if Trinca == 'L':
     j = 0
