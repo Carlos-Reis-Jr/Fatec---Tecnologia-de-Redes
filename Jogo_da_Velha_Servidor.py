@@ -29,22 +29,22 @@ Flag_JogaServer = False;
 #        Informa na Coluna Resultado as Células Ganhadoras             #
 ########################################################################
 
-def registra_resultado( Trinca, LinCol ):
+def registra_resultado( Trinca, Lin_Col ):
 
-  global DadosJogo, Flag_JogaServer
+  global DadosJogo
 
-  if Trinca == 'L':
+  if Trinca == 'C':
     j = 0
     while j <= 2:    
       for posicao in DadosJogo:  
-        if ( posicao[0][0] == LinCol ) and ( posicao[0][1] == j ):
+        if ( posicao[0][0] == Lin_Col ) and ( posicao[0][1] == j ):
           posicao[7] = posicao[6]
       j = j + 1
-  elif Trinca == 'C':
+  elif Trinca == 'L':
     j = 0
     while j <= 2:    
       for posicao in DadosJogo:  
-        if ( posicao[0][0] == j ) and ( posicao[0][1] == LinCol ):
+        if ( posicao[0][0] == j ) and ( posicao[0][1] == Lin_Col ):
           posicao[7] = posicao[6]
       j = j + 1
   elif Trinca == 'DP':
@@ -56,14 +56,11 @@ def registra_resultado( Trinca, LinCol ):
       j = j + 1
   elif Trinca == 'DI':
     j = 0
-    k = 2
     while j <= 2:    
       for posicao in DadosJogo:  
-        if ( posicao[0][0] == k-j ) and ( posicao[0][1] == j ):
+        if ( posicao[0][0] == (2-j) ) and ( posicao[0][1] == j ):
           posicao[7] = posicao[6]
       j = j + 1
-
-  Flag_JogaServer = False
 
 ########################################################################
 #              O servidor faz a Jogada do Oponente                     #
@@ -95,16 +92,16 @@ def server_faz_jogada():
 ########################################################################
 def exec_verifica_jogada():
 
-  global DadosJogo
+  global DadosJogo, Flag_JogaServer
 
   Flag_Resultado = True
 
-  # Verifica Resultados nas Linhas
+  # Verifica Resultados nas Colunas
   LinCol = 0
   while LinCol <= 2:
-    LC1 = '#'
-    LC2 = '#'
-    LC3 = '#'
+    LC1 = '*'
+    LC2 = '*'
+    LC3 = '*'
     for posicao in DadosJogo:  
       if ( posicao[0][0] == LinCol ) and ( posicao[0][1] == 0 ):
         LC1 = posicao[6]
@@ -112,20 +109,21 @@ def exec_verifica_jogada():
         LC2 = posicao[6]
       elif ( posicao[0][0] == LinCol ) and ( posicao[0][1] == 2 ):
         LC3 = posicao[6]
-      if (LC1 != '#') and (LC2 != '#') and (LC3 != '#'):
-        if (LC1 == LC2) and (LC2 == LC3):
-          Flag_Resultado = False           
-          registra_resultado( 'L', LinCol )
-          break;
+    if (LC1 != '*') and (LC2 != '*') and (LC3 != '*'):
+      if (LC1 == LC2) and (LC2 == LC3):
+        Flag_JogaServer = True
+        Flag_Resultado = False           
+        registra_resultado( 'C', LinCol )
+        break;
     LinCol += 1    
 
-  # Verifica Resultados nas Colunas
+  # Verifica Resultados nas Linhas
   if Flag_Resultado:
     LinCol = 0
     while LinCol <= 2:
-      LC1 = '#'
-      LC2 = '#'
-      LC3 = '#'
+      LC1 = '*'
+      LC2 = '*'
+      LC3 = '*'
       for posicao in DadosJogo:  
         if ( posicao[0][0] == 0 ) and ( posicao[0][1] == LinCol ):
           LC1 = posicao[6]
@@ -133,18 +131,19 @@ def exec_verifica_jogada():
           LC2 = posicao[6]
         elif ( posicao[0][0] == 2 ) and ( posicao[0][1] == LinCol ):
           LC3 = posicao[6]
-        if (LC1 != '#') and (LC2 != '#') and (LC3 != '#'):
-          if (LC1 == LC2) and (LC2 == LC3):
-            Flag_Resultado = False           
-            registra_resultado( 'C', LinCol )
-            break;
+      if (LC1 != '*') and (LC2 != '*') and (LC3 != '*'):
+        if (LC1 == LC2) and (LC2 == LC3):
+          Flag_JogaServer = True
+          Flag_Resultado = False           
+          registra_resultado( 'L', LinCol )
+          break;
       LinCol += 1    
 
   # Verifica Resultados Diagonal Principal "DP"
   if Flag_Resultado:
-    LC1 = '#'
-    LC2 = '#'
-    LC3 = '#'
+    LC1 = '*'
+    LC2 = '*'
+    LC3 = '*'
     for posicao in DadosJogo:  
       if ( posicao[0][0] == 0 ) and ( posicao[0][1] == 0 ):
         LC1 = posicao[6]
@@ -152,18 +151,18 @@ def exec_verifica_jogada():
         LC2 = posicao[6]
       elif ( posicao[0][0] == 2 ) and ( posicao[0][1] == 2 ):
         LC3 = posicao[6]
-      if (LC1 != '#') and (LC2 != '#') and (LC3 != '#'):
+      if (LC1 != '*') and (LC2 != '*') and (LC3 != '*'):
         if (LC1 == LC2) and (LC2 == LC3):
+          Flag_JogaServer = True
           Flag_Resultado = False           
           registra_resultado( 'DP', 0 )
           break;
 
   # Verifica Resultados Diagonal Invertida "DI"
   if Flag_Resultado:
-    LC1 = '#'
-    LC2 = '#'
-    LC3 = '#'
- 
+    LC1 = '*'
+    LC2 = '*'
+    LC3 = '*'
     for posicao in DadosJogo:  
       if ( posicao[0][0] == 2 ) and ( posicao[0][1] == 0 ):
         LC1 = posicao[6]
@@ -171,15 +170,16 @@ def exec_verifica_jogada():
         LC2 = posicao[6]
       elif ( posicao[0][0] == 0 ) and ( posicao[0][1] == 2 ):
         LC3 = posicao[6]
-      if (LC1 != '#') and (LC2 != '#') and (LC3 != '#'):
+      if (LC1 != '*') and (LC2 != '*') and (LC3 != '*'):
         if (LC1 == LC2) and (LC2 == LC3):
+          Flag_JogaServer = True
           Flag_Resultado = False           
           registra_resultado( 'DI', 2 )
           break;
 
     
 ########################################################################
-#        PROGRAMA PRINCIPAL - VERSÃO PARA O JOGADOR                    #
+#           PROGRAMA PRINCIPAL - VERSÃO DO SERVIDOR                    #
 ########################################################################
 
 # Formatação JSON para o envio de Dados
@@ -192,27 +192,22 @@ while True:
   sentence = connectionSocket.recv(65000)
   DataStrJson = str(sentence,"utf-8")
 
-  # print( "Dados Recebidos \n \n" + DataStrJson)
-  print( "\n Dados Recebidos \n")
+  print( "\n Dados Recebidos do Jogador \n \n" + DataStrJson )
   
   DadosJogo = json.loads(DataStrJson) 
 
-  Flag_JogaServer == False
+  Flag_JogaServer = False
   
   exec_verifica_jogada()
 
-  if Flag_JogaServer != True:
+  if (Flag_JogaServer != True):
+    
     server_faz_jogada()
     exec_verifica_jogada()
     
   DataJsonStr = json.dumps(DadosJogo)
 
-  # print( "Dados Transmitidos \n \n" + DataJsonStr)
-  print( "\n Dados Transmitidos \n")
+  print( "\n Dados Transmitidos \n \n" + DataJsonStr)
     
   connectionSocket.send(bytes(DataJsonStr, "utf-8"))
   connectionSocket.close()
-
-
-  
-
