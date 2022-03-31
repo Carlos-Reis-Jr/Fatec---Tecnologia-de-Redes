@@ -15,6 +15,11 @@ from pygame.locals import *
 from random import randint, shuffle
 from socket import *
 
+# Configuração de Comunicação
+serverName = "127.0.0.1"                                     # IP do Servidor (Default Localhost)
+serverPort = 1200                                            # Porta
+clientSocket = socket(AF_INET, SOCK_STREAM)                  # Socket 
+
 # Definição de Variaveis para Telas / Cores / Dimensões 
 CorPainel = (128, 203, 196)                                  # Cinza
 CorFundo  = (187, 222, 251)                                  # Branco
@@ -41,11 +46,6 @@ TamImgNor = [16,16]                                          # Tam. em pixels da
 TamImgAtv = [16,16]                                          # Tam. em pixels das Imagens Ativas
 PassoNorm = 0.25                                             # Passo da Imagem Normal
 PassoAtv  = 0.25                                             # Passo da Imagem Ativa
-
-# Configuração de Comunicação
-serverName = "127.0.0.1"                                     # IP do Servidor (Default Localhost)
-serverPort = 1200                                            # Porta
-clientSocket = socket(AF_INET, SOCK_STREAM)                  # Socket 
 
 ########################################################################
 #                    Geração das Peças do Tabuleiro                    #
@@ -87,7 +87,7 @@ def load_array_pecas(Tipo):
 
 def draw_noughts_crosses():  
 
-  global ObjPc, CorFillBox, CorBarra, EspBorda, CorPeca, CorTrinca
+  global ObjPc, Flag_Resultado, CorFillBox, CorBarra, EspBorda, CorPeca, CorTrinca
 
   Flag_Vitoria  = False
   Flag_Derrota  = False
@@ -133,6 +133,7 @@ def draw_noughts_crosses():
 
   # Verifica se há Resultado (Vitoria, Derrota ou Empate)
   if (Flag_Vitoria == True) or (Flag_Derrota == True) or (Total_Marcado == 9):
+    Flag_Resultado = True
     if (Flag_Vitoria != True) and (Flag_Derrota != True):
       Msg_Resultado = 'Empate'
     draw_text_message('>>> '+ Msg_Resultado + ' <<<', 54, CorMensag, CorPainel, PercentX=50, PercentY=10 )
@@ -249,7 +250,7 @@ def draw_backg_screen():
   
 def play_server_connect():
 
-  global ObjPc, Loop_Jogo
+  global ObjPc, Loop_Jogo, Flag_Resultado
 
   # Formatação JSON para o envio de Dados
 
@@ -280,7 +281,7 @@ def play_server_connect():
 
 def play_noughts_crosses(Tipo):
 
-  global ObjPc, Loop_Jogo, serverName, serverPort, clientSocket
+  global ObjPc, Flag_Resultado, Loop_Jogo, serverName, serverPort, clientSocket
 
   load_array_pecas (Tipo)
   draw_grade_jogo(Tipo)
@@ -302,22 +303,23 @@ def play_noughts_crosses(Tipo):
           Loop_Jogo = False
         elif event.key == K_SPACE:
           Loop_Jogo = True
+          Flag_Resultado = False
           load_array_pecas (Tipo)
           draw_grade_jogo(Tipo)
       elif event.type == MOUSEBUTTONDOWN:
-        mouseX, mouseY = event.pos
-        # Verifica se Pressionou o Mouse na área de Jogo
-        for n in range(len(ObjPc)):
-          Pxi = ObjPc[n][1][0]
-          Pxf = ObjPc[n][1][2]
-          Pyi = ObjPc[n][1][1]
-          Pyf = ObjPc[n][1][3]
-          if ( ( mouseX >= Pxi and mouseX <= Pxf ) and ( mouseY >= Pyi and mouseY <= Pyf ) ):
-            if ObjPc[n][6] == '*':
-              ObjPc[n][6] = ObjPc[n][5]
-              Flag_Jogo = True
-              continue;
-      
+        if Flag_Resultado != True:
+          mouseX, mouseY = event.pos
+          # Verifica se Pressionou o Mouse na área de Jogo
+          for n in range(len(ObjPc)):
+            Pxi = ObjPc[n][1][0]
+            Pxf = ObjPc[n][1][2]
+            Pyi = ObjPc[n][1][1]
+            Pyf = ObjPc[n][1][3]
+            if ( ( mouseX >= Pxi and mouseX <= Pxf ) and ( mouseY >= Pyi and mouseY <= Pyf ) ):
+              if ObjPc[n][6] == '*':
+                ObjPc[n][6] = ObjPc[n][5]
+                Flag_Jogo = True
+                continue;
     if Flag_Jogo:
       draw_grade_jogo(ObjPc[n][5])
       draw_noughts_crosses()
@@ -361,13 +363,14 @@ while Loop_Programa:
         draw_menu_screen()
         continue;
       elif event.key == K_x:
-        Loop_Jogo = True        
+        Loop_Jogo = True
+        Flag_Resultado = False
         play_noughts_crosses('X')
       elif event.key == K_o:
-        Loop_Jogo = True        
+        Loop_Jogo = True
+        Flag_Resultado = False
         play_noughts_crosses('O')
   
 pygame.quit()
 quit()
   
- 
