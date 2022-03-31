@@ -26,7 +26,6 @@ CorFundo  = (187, 222, 251)                                  # Branco
 CorBorda  = (38, 166, 154)                                   # Cor da Borda
 CorPeca   = (244, 16, 0)                                     # Cor da Peça
 CorTrinca = (204, 255, 255)                                  # Cor das Peças qdo Formam a Trinca
-ObjTexto  = []                                               # Container para textos gráficos
 ObjPc     = []                                               # Peças do Tabuleiro [ ( x, y, z ), 'Valor' ]
 
 # Cores para Textos
@@ -209,31 +208,13 @@ def draw_text_message(Pmsg, Psize=32, Pcor=CorMensag, Pfundo=CorPainel, PercentX
 
 def draw_menu_screen():
 
-  global ObjTexto
-
   # Desenha a Tela Inicial de Menu com a Opção de Escolha do Tipo de Peça para Inicio do Jogo
 
   # Título
-  ObjTexto[0] = 'freesansbold.ttf'             # Tipo/Nome da Fonte
-  ObjTexto[1] = 72                             # Escala da Fonte
-  ObjTexto[2] = CorTitulo                      # Cor da Fonte
-  ObjTexto[3] = CorPainel                      # Cor de Fundo do Texto
-  ObjTexto[4] = 'Jogo da Velha'                # Texto Exibido
-  ObjTexto[5] = 0                              # Posição Central da Área da Imagem X
-  ObjTexto[6] = 20                             # %Posição Central da Área da Imagem Y
-
-  draw_text_message(ObjTexto[4], ObjTexto[1], ObjTexto[2], ObjTexto[3], ObjTexto[5], ObjTexto[6], ObjTexto[0] )
-                  
+  draw_text_message('Jogo da Velha', Psize=72, Pcor=CorTitulo, Pfundo=CorPainel, PercentX=0, PercentY=20 )
+    
   # Mensagem Tela Principal
-  ObjTexto[0] = 'freesansbold.ttf'             # Tipo/Nome da Fonte
-  ObjTexto[1] = 44                             # Escala da Fonte
-  ObjTexto[2] = CorMensag                      # Cor da Fonte
-  ObjTexto[3] = CorPainel                      # Cor de Fundo do Texto
-  ObjTexto[4] = 'Tecle [X] ou [O] para Jogar.' # Texto Exibido
-  ObjTexto[5] = 0                              # Posição Central da Área da Imagem X
-  ObjTexto[6] = 80                             # Posição Central da Área da Imagem Y
-
-  draw_text_message(ObjTexto[4], ObjTexto[1], ObjTexto[2], ObjTexto[3], ObjTexto[5], ObjTexto[6], ObjTexto[0] )
+  draw_text_message('Tecle [X] ou [O] para jogar', Psize=44, Pcor=CorMensag, Pfundo=CorPainel, PercentX=0, PercentY=80 )
 
 ########################################################################
 #        Preenche a Tela com a Cor de Fundo (Limpa a Tela)             #
@@ -333,19 +314,12 @@ def play_noughts_crosses(Tipo):
 Loop_Programa = True                                         # Controla o LOOP do Jogo
 Loop_Jogo     = False                                        # Controla o LOOP da Partida
 
-# Inicialização do Container para textos gráficos
-i = 0
-while i <= 7:
-  ObjTexto.append( '' );
-  i += 1
- 
 # Inicialização do PyGame
 pygame.init() 
 painel = pygame.display.set_mode((PnLarg,PnAlt), 0, 32) 
 pygame.display.set_caption('Jogo da Velha')
 
 # Programa Principal
-
 draw_backg_screen()
 draw_menu_screen()
   
@@ -373,4 +347,4 @@ while Loop_Programa:
   
 pygame.quit()
 quit()
-  
+ 
